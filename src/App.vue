@@ -1,8 +1,22 @@
 <template>
   <div id="app" class="contain">
     <gamestate-start v-if="uiState === 'start'">
-      <h3>Hello world!</h3></gamestate-start
-    >
+      <h2>Which heumen you want to be?</h2>
+      <p
+        v-for="option in characterChoices"
+        :key="option"
+        class="characterChoices"
+      >
+        <input
+          type="radio"
+          :id="option"
+          :value="option"
+          v-model="characterInput"
+        />
+        <label :for="option">{{ option }}</label>
+      </p>
+      <button @click="pickCharacter">Pick your character!</button>
+    </gamestate-start>
     <section v-else>
       <svg viewBox="0 -180 1628 1180" class="main">
         <defs>
@@ -26,13 +40,18 @@
           </clipPath>
         </defs>
 
+        <Friend />
+        <Score />
+
+        <component :is="character" />
+
         <text
           x="1000"
           y="930"
           style="font: normal 45px 'Recursive; text-transform: uppercase;"
           class="text"
         >
-          Character Name
+          {{ character }}
         </text>
 
         <path fill="#f0959f" d="M0 842h657v192H0z" />
@@ -70,13 +89,36 @@
 <script>
 import { mapState } from "vuex";
 import GamestateStart from "@/components/GamestateStart.vue";
+import Artist from "@/components/Artist.vue";
+import Baker from "@/components/Baker.vue";
+import Friend from "@/components/Friend.vue";
+import Mechanic from "@/components/Mechanic.vue";
+import Score from "@/components/Score.vue";
+import Zombie from "@/components/Zombie.vue";
 
 export default {
   components: {
     GamestateStart,
+    Artist,
+    Baker,
+    Friend,
+    Mechanic,
+    Score,
+    Zombie,
+  },
+  data() {
+    return {
+      characterInput: "",
+    };
   },
   computed: {
-    ...mapState(["uiState", "questions"]),
+    ...mapState(["uiState", "questions", "characterChoices", "character"]),
+  },
+  methods: {
+    pickCharacter() {
+      this.$store.commit("pickCharacter", this.characterInput);
+      this.$store.commit("updateUIState", "characterChosen");
+    },
   },
 };
 </script>
